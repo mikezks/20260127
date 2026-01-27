@@ -17,5 +17,9 @@ export const appConfig: ApplicationConfig = {
     provideEffects(),
     provideRouterFeature(),
     provideStoreDevtools(),
+    // provideCheckNoChangesConfig({
+    //   exhaustive: true,
+    //   interval: 3_000
+    // })
   ]
 };
