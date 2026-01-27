@@ -70,11 +70,6 @@ export const addressSchema = schema<Address>(addressPath => {
     }
   `
 })
-export class AddressForm /* implements FormValueControl<Address> */ {
+export class AddressForm {
   address = input.required<FieldTree<Address>>();
-  // value = model(initialAddress);
-  // invalid = input<boolean>(false);
-  
-  // protected readonly addressForm = form(this.value);
-  // field = input<FieldTree<Address>>(this.addressForm);
 }
