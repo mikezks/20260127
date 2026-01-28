@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, computed, effect, inject, Injector, runInInjectionContext, signal, untracked } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight } from '../../logic-flight/model/flight';
 import { injectTicketsFacade } from '../../logic-flight/state/facade';
 import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.component';
 import { FlightFilterComponent } from '../../ui-flight/flight-filter/flight-filter.component';
-import { FlightService } from '@flight-demo/domain/booking-api-boarding';
 // import { SIGNAL } from '@angular/core/primitives/signals';
 
 
@@ -22,7 +21,6 @@ import { FlightService } from '@flight-demo/domain/booking-api-boarding';
 export class FlightSearchComponent {
   private ticketsFacade = injectTicketsFacade();
   private readonly cdRef = inject(ChangeDetectorRef);
-  private readonly injector = inject(Injector);
 
   protected filter = signal({
     from: 'Paris',
@@ -39,27 +37,14 @@ export class FlightSearchComponent {
   protected flights$ = this.ticketsFacade.flights$;
 
   constructor() {
-    const loggerEffectRef = effect(() => console.log(this.route()));
+    effect(() => console.log(this.route()));
     effect(() => {
       this.filter();
       untracked(() => this.search());
     });
-    
-    setTimeout(() => loggerEffectRef.destroy(), 10_000);
   }
 
   protected search(): void {
-    effect(() => console.log(this.route()), {
-      injector: this.injector
-    });
-
-    const flightService = runInInjectionContext(
-      this.injector,
-      () => inject(FlightService)
-    );
-    console.log(flightService.flights);
-    
-
     if (!this.filter().from || !this.filter().to) {
       return;
     }
