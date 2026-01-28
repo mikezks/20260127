@@ -16,7 +16,6 @@ import { RouterLink } from '@angular/router';
   templateUrl: './passenger-edit.component.html'
 })
 export class PassengerEditComponent {
-  private readonly passengerService = inject(PassengerService);
   protected editForm = inject(NonNullableFormBuilder).group({
     id: [0],
     firstName: [''],

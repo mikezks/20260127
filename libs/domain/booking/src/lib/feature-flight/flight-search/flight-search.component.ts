@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, Injector, runInInjectionContext, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight } from '../../logic-flight/model/flight';
 import { injectTicketsFacade } from '../../logic-flight/state/facade';
 import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.component';
 import { FlightFilterComponent } from '../../ui-flight/flight-filter/flight-filter.component';
+import { FlightService } from '@flight-demo/domain/booking-api-boarding';
 // import { SIGNAL } from '@angular/core/primitives/signals';
 
 
@@ -21,6 +22,7 @@ import { FlightFilterComponent } from '../../ui-flight/flight-filter/flight-filt
 export class FlightSearchComponent {
   private ticketsFacade = injectTicketsFacade();
   private readonly cdRef = inject(ChangeDetectorRef);
+  private readonly injector = inject(Injector);
 
   protected filter = signal({
     from: 'Paris',
@@ -35,26 +37,29 @@ export class FlightSearchComponent {
     5: true
   };
   protected flights$ = this.ticketsFacade.flights$;
-  protected firstname = 'Mary';
 
   constructor() {
-    // let activeConsumer: ReactiveNode | null;
-    // activeConsumer = effect(() => console.log(this.route()));
+    const loggerEffectRef = effect(() => console.log(this.route()));
     effect(() => {
       this.filter();
       untracked(() => this.search());
     });
-
-    // console.log(this.route[SIGNAL])
-
-    setTimeout(() => {
-      this.firstname = 'Peter';
-      console.log(this.firstname);
-      // this.cdRef.markForCheck();
-    }, 5_000);
+    
+    setTimeout(() => loggerEffectRef.destroy(), 10_000);
   }
 
   protected search(): void {
+    effect(() => console.log(this.route()), {
+      injector: this.injector
+    });
+
+    const flightService = runInInjectionContext(
+      this.injector,
+      () => inject(FlightService)
+    );
+    console.log(flightService.flights);
+    
+
     if (!this.filter().from || !this.filter().to) {
       return;
     }
