@@ -1,11 +1,12 @@
 import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { Flight } from '../model/flight';
 import { FlightFilter } from '../model/flight-filter';
 import { pipe, switchMap } from 'rxjs';
 import { inject } from '@angular/core';
 import { FlightService } from '../data-access/flight.service';
+import { delegated } from '@flight-demo/shared/core';
 
 export const BookingStore = signalStore(
   // DI Setup
@@ -30,6 +31,12 @@ export const BookingStore = signalStore(
   withMethods(store => ({
     setFilter: (filter: FlightFilter) => patchState(store, { filter }),
     setFlights: (flights: Flight[]) => patchState(store, { flights }),
+  })),
+  withProps(store => ({
+    writableFilter: delegated(
+      store.filter,
+      store.setFilter
+    ),
   })),
   // Side-Effect
   withMethods((
